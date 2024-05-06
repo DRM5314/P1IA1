@@ -1,0 +1,259 @@
+listStreets = []
+listCrossings = []
+
+# NODO A
+listStreets.append(Street("S1",75,30,"B"))
+listStreets.append(Street("S2",200,25,"C"))
+listStreets.append(Street("S3",100,15,"D"))
+listStreets.append(Street("S4",250,30,"E"))
+listCrossings.append(Crossing("A", listStreets))
+listCrossings[0].setTrafficEntry(1000)
+listStreets.clear()
+
+# NODO B
+listStreets.append(Street("S5",60,80,"F"))
+listStreets.append(Street("S6",90,20,"G"))
+
+listCrossings.append(Crossing("B", listStreets))
+listStreets.clear()
+
+# NODO C
+listStreets.append(Street("S7",175,35,"G"))
+listStreets.append(Street("S8",90,25,"H"))
+listStreets.append(Street("S9",80,40,"I"))
+listCrossings.append(Crossing("C", listStreets))
+listStreets.clear()
+
+
+# NODO D
+listStreets.append(Street("S10",100,25,"I"))
+listStreets.append(Street("S11",95,75,"J"))
+listCrossings.append(Crossing("D", listStreets))
+listCrossings[3].setTrafficEntry(195)
+listStreets.clear()
+
+# NODO E
+listStreets.append(Street("S12",45,15,"I"))
+listStreets.append(Street("S13",100,75,"J"))
+listStreets.append(Street("S14",50,85,"K"))
+listCrossings.append(Crossing("E", listStreets))
+listStreets.clear()
+
+# NODO F
+listStreets.append(Street("S15",300,10,"L"))
+listCrossings.append(Crossing("F", listStreets))
+listStreets.clear()
+
+# NODO G
+listStreets.append(Street("S16",125,90,"L"))
+listStreets.append(Street("S17",80,10,"M"))
+listCrossings.append(Crossing("G", listStreets))
+listStreets.clear()
+
+# NODO H
+listStreets.append(Street("S18",90,100,"L"))
+listCrossings.append(Crossing("H", listStreets))
+listStreets.clear()
+
+# NODO I
+listStreets.append(Street("S19",85,20,"L"))
+listStreets.append(Street("S20",100,40,"M"))
+listStreets.append(Street("S21",200,40,"N"))
+listCrossings.append(Crossing("I", listStreets))
+listStreets.clear()
+
+# NODO J
+listStreets.append(Street("S22",120,100,"N"))
+listCrossings.append(Crossing("J", listStreets))
+listStreets.clear()
+
+# NODO K
+listStreets.append(Street("S23",50,100,"N"))
+listCrossings.append(Crossing("K", listStreets))
+listStreets.clear()
+
+# NODO L
+listStreets.append(Street("S24",300,100,None))
+listCrossings.append(Crossing("L", listStreets))
+listStreets.clear()
+
+# NODO M
+listStreets.append(Street("S25",250,10,None))
+listCrossings.append(Crossing("M", listStreets))
+listStreets.clear()
+
+# NODO N
+listStreets.append(Street("S26",190,100,None))
+# listStreets.append(Street("S500",190,100,"O"))
+listCrossings.append(Crossing("N", listStreets))
+listStreets.clear()
+#
+# listStreets.append(Street("S501",190,100,"J"))
+# listCrossings.append(Crossing("O", listStreets))
+# listStreets.clear()
+
+
+# EJEMPLO 2 -------------------------------------------------------------------
+# listStreets.append(Street("s1",15,50,"b"))
+# listStreets.append(Street("s2",85,50,"c"))
+# listCrossings.append(Crossing("a", listStreets))
+# listCrossings[0].setTrafficEntry(100)
+# listStreets.clear()
+#
+# listStreets.append(Street("s3",50,100,"f"))
+# listCrossings.append(Crossing("b", listStreets))
+# listStreets.clear()
+#
+# listStreets.append(Street("s4",50,100,"f"))
+# listCrossings.append(Crossing("c", listStreets))
+# listStreets.clear()
+#
+# listStreets.append(Street("s5",100,100,None))
+# listCrossings.append(Crossing("f", listStreets))
+# listStreets.clear()
+
+# ANALISIS!!!------------------------------------------------
+controller1 = Controller(listCrossings)
+
+controller1.analize()
+counter = 0
+while controller1.isTheBest(counter):
+    controller1.selectFathersFun()
+    print(f"In interaction: {counter} {controller1.bestPoblation()}")
+    controller1.mix(counter)
+    controller1.analize()
+    counter += 1
+print("Savbe")
+
+
+
+
+
+
+
+
+
+# ----------------------------------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+from Model.crossing import crossing as Crossing
+from Model.Street import Street
+from Controller.controller import Controller
+listStreets = []
+listCrossings = []
+
+# NODO A
+listStreets.append(Street("S1",75,"A","B"))
+listStreets.append(Street("S2",200,"A","C"))
+listStreets.append(Street("S3",100,"A","D"))
+listStreets.append(Street("S4",250,"A","E"))
+crossing = Crossing("A")
+crossing.setTrafficEntry(1000)
+listCrossings.append(crossing)
+
+# NODO B
+listStreets.append(Street("S5",60,"B","F"))
+listStreets.append(Street("S6",90,"B","G"))
+
+listCrossings.append(Crossing("B"))
+
+# NODO C
+listStreets.append(Street("S7",175,"C","G"))
+listStreets.append(Street("S8",90,"C","H"))
+listStreets.append(Street("S9",80,"C","I"))
+listCrossings.append(Crossing("C"))
+
+
+# NODO D
+listStreets.append(Street("S10",100,"D","I"))
+listStreets.append(Street("S11",95,"D","J"))
+crossing = Crossing("D")
+crossing.setTrafficEntry(195)
+listCrossings.append(crossing)
+
+# NODO E
+listStreets.append(Street("S12",45,"E","I"))
+listStreets.append(Street("S13",100,"E","J"))
+listStreets.append(Street("S14",50,"E","K"))
+listCrossings.append(Crossing("E"))
+
+# NODO F
+listStreets.append(Street("S15",300,"F","L"))
+listCrossings.append(Crossing("F"))
+
+# NODO G
+listStreets.append(Street("S16",125,"G","L"))
+listStreets.append(Street("S17",80,"G","M"))
+listCrossings.append(Crossing("G"))
+
+# NODO H
+listStreets.append(Street("S18",90,"H","L"))
+listCrossings.append(Crossing("H"))
+
+# NODO I
+listStreets.append(Street("S19",85,"I","L"))
+listStreets.append(Street("S20",100,"I","M"))
+listStreets.append(Street("S21",200,"I","N"))
+listCrossings.append(Crossing("I"))
+
+# NODO J
+listStreets.append(Street("S22",120,"J","N"))
+listCrossings.append(Crossing("J"))
+
+# NODO K
+listStreets.append(Street("S23",50,"K","N"))
+listCrossings.append(Crossing("K"))
+
+# NODO L
+listStreets.append(Street("S24",300,"L",None))
+listCrossings.append(Crossing("L"))
+
+# NODO M
+listStreets.append(Street("S25",250,"M",None))
+listCrossings.append(Crossing("M"))
+
+# NODO N
+listStreets.append(Street("S26",190,"N",None))
+# listStreets.append(Street("S500",190,100,"O"))
+listCrossings.append(Crossing("N"))
+
+
+#
+# listStreets.append(Street("S501",190,100,"J"))
+# listCrossings.append(Crossing("O", listStreets))
+# listStreets.clear()
+
+
+# EJEMPLO 2 -------------------------------------------------------------------
+# listStreets.append(Street("s1",15,"a","b"))
+# listStreets.append(Street("s2",85,"a","c"))
+# crossing = Crossing("a")
+# crossing.setTrafficEntry(100)
+# listCrossings.append(crossing)
+#
+# listStreets.append(Street("s3",50,"b","f"))
+# listCrossings.append(Crossing("b"))
+#
+# listStreets.append(Street("s4",50,"c","f"))
+# listCrossings.append(Crossing("c"))
+#
+# listStreets.append(Street("s5",100,"f",None))
+# listCrossings.append(Crossing("f", listStreets))
+
+# ANALISIS!!!------------------------------------------------
+controller1 = Controller(listCrossings,listStreets)
+
+controller1.analize()
+counter = 0
+while controller1.isTheBest(counter):
+    controller1.selectFathersFun()
+    print(f"In interaction: {counter} {controller1.bestPoblation()}")
+    controller1.mix(counter)
+    controller1.analize()
+    counter += 1
+print("Savbe")

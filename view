@@ -1,0 +1,177 @@
+import tkinter as tk
+import networkx as nx
+import matplotlib.pyplot as plt
+
+class GraphApp:
+    selectStreetsForMove = []
+    selectTextStreetsForMove = []
+    def __init__(self, master):
+        self.master = master
+        self.canvas = tk.Canvas(master=self.master,width=1500,height=500)
+        self.canvas.pack(fill=tk.BOTH, expand=True)
+
+        self.G = nx.Graph()
+        self.nodes = []
+        self.text = []
+        self.lines = []
+        self.streets = []
+
+        # Agregar algunos nodos iniciales
+        self.add_node(100, 100,"A")
+        self.add_node(300, 200,"B")
+        self.add_node(200, 300,"C")
+        self.add_node(500, 500,"D")
+        self.add_node(400, 500,"E")
+        # Arista
+        self.add_Edge("A","B")
+        self.add_Edge("A","C")
+        self.add_Edge("A","D")
+        self.add_Edge("B","A")
+        self.add_Edge("E","D")
+        self.add_Edge("D","C")
+
+        # Entrada
+        self.addEntryNode("A")
+
+        # Dibujar el grafo
+        self.draw_graph()
+
+        # Manejar eventos de arrastre
+        self.canvas.bind("<ButtonPress-1>", self.on_node_press)
+        self.canvas.bind("<B1-Motion>", self.on_node_drag)
+        self.canvas.bind("<ButtonRelease-1>", self.on_node_release)
+
+    def add_node(self, x, y,name):
+        node = self.canvas.create_oval(x - 30, y - 30, x + 30, y + 30, fill="skyblue", tags="node")
+        text = self.canvas.create_text(x,y,text=name,font="Arial 12 bold",fill="black")
+        self.nodes.append(NodeInfo(name,node,text))
+
+    def addEntryNode(self, nodeName):
+        for node in self.nodes:
+            if node.name == nodeName:
+                nodesPosition = self.canvas.coords(node.positionCanvas)
+                xNode = nodesPosition[0] + 30
+                yNode = nodesPosition[1] + 30
+                line = self.canvas.create_line(xNode-50, yNode, xNode - 30, yNode, fill="black", arrow=tk.LAST)
+                node.setEntryNode(line)
+                break
+
+
+    def add_Edge(self, fromEdge, toEdge):
+        positionsFromTo = [None]*4
+        nodeFrom = None
+        nodeTo = None
+        for node in self.nodes:
+            if fromEdge == node.name:
+                nodesPositionOrigin = self.canvas.coords(node.positionCanvas)
+                positionsFromTo[0] = nodesPositionOrigin[0]
+                positionsFromTo[1] = nodesPositionOrigin[1]
+            if toEdge == node.name:
+               nodesPositionDestin = self.canvas.coords(node.positionCanvas)
+               positionsFromTo[2] = nodesPositionDestin[0]
+               positionsFromTo[3] = nodesPositionDestin[1]
+
+        if None is not positionsFromTo:
+            xOrigin = positionsFromTo[0] + 30
+            yOrigin = positionsFromTo[1] + 30
+            xDestin = positionsFromTo[2] + 30
+            yDestin = positionsFromTo[3] + 30
+            name = ""
+            xMiddle = xOrigin + xDestin
+            yMiddle = yOrigin + yDestin
+            direction = xDestin - xOrigin
+            if direction > 0:
+                line = self.canvas.create_line(xOrigin + 30, yOrigin, xDestin - 30, yDestin, fill="black", arrow=tk.LAST)
+                name = fromEdge + ">" +toEdge
+            else:
+                line = self.canvas.create_line(xOrigin - 30, yOrigin, xDestin + 30, yDestin, fill="black",arrow=tk.LAST)
+                name = fromEdge + "<" + toEdge
+            text = self.canvas.create_text(xMiddle/2, yMiddle/2 , text=name, font="Arial 8 bold", fill="black")
+            street = StreetInfo(name,line,text,fromEdge,toEdge)
+            self.streets.append(street)
+
+
+    def draw_graph(self):
+        pos = nx.spring_layout(self.G)
+        fig = plt.figure(figsize=(6, 4))  # Crear una figura de matplotlib
+        nx.draw(self.G, pos, with_labels=True, node_size=700, node_color="skyblue")
+        plt.close(fig)  # Cerrar la figura para evitar que se muestre en una ventana emergente
+
+    def on_node_press(self, event):
+        for node in self.nodes:
+            nodeCanva = node.positionCanvas
+            if self.canvas.coords(nodeCanva)[0] <= event.x <= self.canvas.coords(nodeCanva)[2] and \
+                    self.canvas.coords(nodeCanva)[1] <= event.y <= self.canvas.coords(nodeCanva)[3]:
+                self.selected_node = node
+                nossss = self.canvas.coords(nodeCanva)
+                self.drag_data = {"x": event.x, "y": event.y}
+
+
+    def findTextSteet(self,positionsLine):
+        for text in self.text:
+            positionTextStreet = self.canvas.coords(text)
+            middleX = ((positionsLine[0] + 30) + positionsLine[2] - 30) / 2
+            middleY = (positionsLine[1] + positionsLine[3]) / 2
+            if positionTextStreet[0] == middleX and positionTextStreet[1] == middleY:
+                if text not in self.selectTextStreetsForMove:
+                    self.selectTextStreetsForMove.append(text)
+    def on_node_drag(self, event):
+        node = self.selected_node
+        delta_x = event.x - self.drag_data["x"]
+        delta_y = event.y - self.drag_data["y"]
+        self.canvas.move(node.positionCanvas, delta_x, delta_y)
+        self.canvas.move(node.positionText, delta_x, delta_y)
+        xLine = delta_x
+        yLines = delta_y
+        x = 0
+        y = 0
+        if node.entryNode != None:
+            self.canvas.move(node.entryNode, delta_x, delta_y)
+        for street in self.streets:
+            line = self.canvas.coords(street.positionCanvas)
+            if street.fromN == node.name:
+                xMove = line[0] + delta_x
+                yMove = line[1] + delta_y
+                xQuiet = line[2]
+                yQuiet = line[3]
+                self.canvas.coords(street.positionCanvas,xMove,yMove,xQuiet,yQuiet)
+                self.canvas.coords(street.positionTextCanvas, ((xMove + xQuiet) / 2), ((yMove + yQuiet) / 2))
+            if street.toN == node.name:
+                xQuiet = line[0]
+                yQuiet = line[1]
+                xMove = line[2] + delta_x
+                yMove = line[3] + delta_y
+                self.canvas.coords(street.positionCanvas,xQuiet,yQuiet,xMove,yMove)
+                self.canvas.coords(street.positionTextCanvas, ((xMove + xQuiet) / 2), ((yMove + yQuiet) / 2))
+        self.drag_data["x"] = event.x
+        self.drag_data["y"] = event.y
+
+
+    def on_node_release(self, event):
+        self.drag_data = None
+        self.selectStreetsForMove.clear()
+        self.selectTextStreetsForMove.clear()
+
+def main():
+    root = tk.Tk()
+    frameNodes = tk.Frame(master=root,width=1500,height=500)
+    frameNodes.pack(fill=tk.BOTH, side=tk.LEFT, expand=True)
+    app = GraphApp(frameNodes)
+    frameConfiguration = tk.Frame(master=root,width=150,bg="orange")
+    frameConfiguration.rowconfigure([0, 1, 2, 3, 4], minsize=2, weight= 1)
+    frameConfiguration.columnconfigure(0, minsize=50, weight=1)
+    addNode = tk.Button(master=frameConfiguration, text="Agregar Nodo")
+    addNode.grid(row=0, column=0)
+    addNode = tk.Button(master=frameConfiguration, text="Borrar nodo")
+    addNode.grid(row=0, column=1)
+    addNode = tk.Button(master=frameConfiguration, text="Agregar Arista")
+    addNode.grid(row=1, column=0)
+    addNode = tk.Button(master=frameConfiguration, text="Agregar Entrada")
+    addNode.grid(row=2, column=0)
+    addNode = tk.Button(master=frameConfiguration, text="Agregar Salida")
+    addNode.grid(row=2, column=1)
+    frameConfiguration.pack(fill=tk.BOTH, side=tk.LEFT, expand=True)
+    root.mainloop()
+
+if __name__ == "__main__":
+    main()
